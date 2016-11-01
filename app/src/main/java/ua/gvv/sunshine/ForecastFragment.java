@@ -1,8 +1,11 @@
 package ua.gvv.sunshine;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -12,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -55,33 +59,49 @@ public class ForecastFragment extends Fragment {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                Log.i("ForecastFragment", "REFRESH");
-                new FetchWeatherTask().execute("cherkasy,ua");
+                updateWeather();
+                return true;
+            case R.id.action_settings:
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+
+    }
+
+    private void updateWeather() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        new FetchWeatherTask().execute(
+            sharedPref.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_def_value)),
+            sharedPref.getString(getString(R.string.pref_unit_key), getString(R.string.pref_unit_def_value))
+        );
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        ArrayList<String> fakeData = new ArrayList<String>(Arrays.asList(new String[]{
-                "Today - light cloud, no precipitation - 0/+8",
-                "Tomorrow - cloudy, clear at times, no precipitation - +3/+9",
-                "Sunday - overcast, no precipitation - +5/+8",
-                "Monday - cloudy, clear at times, no precipitation - +3/+6",
-                "Tuesday - light cloud, no precipitation - -1/+5",
-                "Wednesday - clear, no precipitation - 1/+5",
-                "Thursday - cloud, no precipitation - -1/+6"
-        }));
-        adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, fakeData);
+        adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, new ArrayList());
 
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
+        final ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String msg = adapter.getItem(position);
+                Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra(Intent.EXTRA_TEXT, msg);
+                startActivity(intent);
+            }
+        });
 
         return rootView;
     }
@@ -98,9 +118,12 @@ public class ForecastFragment extends Fragment {
 
         /** The system calls this to perform work in a worker thread and
          * delivers it the parameters given to AsyncTask.execute() */
-        protected String[] doInBackground(String... postalCode) {
+        protected String[] doInBackground(String... param) {
+            //getPreferencesFromResource(R.xml.pref_general);
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
+
+
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             Uri.Builder uriBuilder = new Uri.Builder();
@@ -110,8 +133,8 @@ public class ForecastFragment extends Fragment {
                 .appendPath("2.5")
                 .appendPath("forecast")
                 .appendPath("daily")
-                .appendQueryParameter("q", postalCode[0])
-                .appendQueryParameter("units", "metric")
+                .appendQueryParameter("q", param[0])
+                .appendQueryParameter("units", param[1])
                 .appendQueryParameter("lang", "uk")
                 .appendQueryParameter("cnt", "7")
                 .appendQueryParameter("appid", "488232000e9f56fb20f8a69b53fec812").build();

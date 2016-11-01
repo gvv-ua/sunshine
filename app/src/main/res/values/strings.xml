@@ -2,7 +2,28 @@
     <string name="app_name">Sunshine</string>
 
     <string name="refresh_button">Refresh</string>
+    <string name="title_activity_detail">DetailActivity</string>
+    <string name="action_settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <!--<string name="hello_blank_fragment">Hello blank fragment</string>-->
+    <!--Setting-->
+    <string name="pref_location_title">Location</string>
+    <string name="pref_location_key" translatable="false">location</string>
+    <string name="pref_location_def_value" translatable="false">cherkasy,ua</string>
+
+    <string name="pref_unit_title">Temperature Units</string>
+    <string name="pref_unit_key">temperature_units</string>
+    <string name="pref_unit_def_value">imperial</string>
+    <string-array name="pref_unit_names">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+    <string-array name="pref_unit_values">
+        <item>metric</item>
+        <item>imperial</item>
+    </string-array>
+
+
+
+
+
 </resources>
