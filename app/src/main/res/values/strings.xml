@@ -4,6 +4,7 @@
     <string name="refresh_button">Refresh</string>
     <string name="title_activity_detail">DetailActivity</string>
     <string name="action_settings">Settings</string>
+    <string name="action_view_on_map">View Location on Map</string>
 
     <!--Setting-->
     <string name="pref_location_title">Location</string>

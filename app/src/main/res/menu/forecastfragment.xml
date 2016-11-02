@@ -4,8 +4,10 @@
           android:title="@string/refresh_button"></item>
     <item
         android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        />
+        android:title="@string/action_settings" />
 
+    <item
+        android:id="@+id/action_view_on_map"
+        android:title="@string/action_view_on_map" />
 
 </menu>

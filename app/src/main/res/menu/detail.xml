@@ -1,4 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:bwq="http://schemas.android.com/apk/res-auto"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="ua.gvv.sunshine.DetailActivity">
@@ -7,4 +8,11 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_share"
+        android:title="Share"
+        bwq:actionProviderClass="android.support.v7.widget.ShareActionProvider"
+        />
+
 </menu>
