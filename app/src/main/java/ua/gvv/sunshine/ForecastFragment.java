@@ -106,7 +106,7 @@ public class ForecastFragment extends Fragment {
         }
         new FetchWeatherTask().execute(
                 sharedPref.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_def_value)),
-                sharedPref.getString(getString(R.string.pref_unit_key), getString(R.string.pref_unit_def_value))
+                sharedPref.getString(getString(R.string.pref_units_key), getString(R.string.pref_unit_def_value))
         );
     }
 
