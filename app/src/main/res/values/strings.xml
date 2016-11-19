@@ -12,7 +12,7 @@
     <string name="pref_location_def_value" translatable="false">cherkasy,ua</string>
 
     <string name="pref_unit_title">Temperature Units</string>
-    <string name="pref_unit_key">temperature_units</string>
+    <string name="pref_units_key">temperature_units</string>
     <string name="pref_unit_def_value">imperial</string>
     <string-array name="pref_unit_names">
         <item>Metric</item>
