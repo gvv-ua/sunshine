@@ -21,7 +21,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import android.text.format.Time;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
@@ -178,6 +177,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         final String OWM_DESCRIPTION = "main";
         final String OWM_WEATHER_ID = "id";
 
+        final String OWM_DATE = "dt";
+
         try {
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
             JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
@@ -202,15 +203,6 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             // current day, we're going to take advantage of that to get a nice
             // normalized UTC date for all of our weather.
 
-            Time dayTime = new Time();
-            dayTime.setToNow();
-
-            // we start at the day returned by local time. Otherwise this is a mess.
-            int julianStartDay = Time.getJulianDay(System.currentTimeMillis(), dayTime.gmtoff);
-
-            // now we work exclusively in UTC
-            dayTime = new Time();
-
             for(int i = 0; i < weatherArray.length(); i++) {
                 // These are the values that will be collected.
                 long dateTime;
@@ -229,7 +221,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                 JSONObject dayForecast = weatherArray.getJSONObject(i);
 
                 // Cheating to convert this to UTC time, which is what we want anyhow
-                dateTime = dayTime.setJulianDay(julianStartDay+i);
+                dateTime = dayForecast.getLong(OWM_DATE) * 1000;
 
                 pressure = dayForecast.getDouble(OWM_PRESSURE);
                 humidity = dayForecast.getInt(OWM_HUMIDITY);
@@ -338,6 +330,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                     .appendQueryParameter(FORMAT_PARAM, format)
                     .appendQueryParameter(UNITS_PARAM, units)
                     .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
+                    .appendQueryParameter("appid", "488232000e9f56fb20f8a69b53fec812")
                     .build();
 
             URL url = new URL(builtUri.toString());
