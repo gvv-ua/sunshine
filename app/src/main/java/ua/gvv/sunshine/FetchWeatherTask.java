@@ -38,7 +38,7 @@ import java.util.Vector;
 import ua.gvv.sunshine.data.WeatherContract;
 import ua.gvv.sunshine.data.WeatherContract.WeatherEntry;
 
-public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
 
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
@@ -96,7 +96,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it
      * into an Object hierarchy for us.
      */
-    private String[] getWeatherDataFromJson(String forecastJsonStr,
+    private void getWeatherDataFromJson(String forecastJsonStr,
                                             String locationSetting)
             throws JSONException {
 
@@ -225,15 +225,15 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             Uri weatherForLocationUri = WeatherEntry.buildWeatherLocationWithStartDate(
                     locationSetting, System.currentTimeMillis());
 
+            Log.d(LOG_TAG, "FetchWeatherTask Complete.");
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
-        return null;
     }
 
     @Override
-    protected String[] doInBackground(String... params) {
+    protected Void doInBackground(String... params) {
 
         // If there's no zip code, there's nothing to look up.  Verify size of params.
         if (params.length == 0) {
@@ -320,7 +320,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         }
 
         try {
-            return getWeatherDataFromJson(forecastJsonStr, locationQuery);
+            getWeatherDataFromJson(forecastJsonStr, locationQuery);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
