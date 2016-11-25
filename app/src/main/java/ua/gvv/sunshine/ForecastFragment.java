@@ -29,6 +29,17 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private SharedPreferences sharedPref;
     private final static int CURSOR_LOADER_ID = 100;
 
+    private static final String[] FORECAST_COLUMNS = {
+            WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
+            WeatherContract.WeatherEntry.COLUMN_DATE,
+            WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
+            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
+            WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
+            WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING,
+            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
+            WeatherContract.LocationEntry.COLUMN_COORD_LAT,
+            WeatherContract.LocationEntry.COLUMN_COORD_LONG
+    };
 
 
     public ForecastFragment() {
@@ -129,7 +140,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             // Sort order:  Ascending, by date.
             String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
             Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, System.currentTimeMillis());
-            cursorLoader = new CursorLoader(getActivity(), weatherForLocationUri, null, null, null, sortOrder);
+            cursorLoader = new CursorLoader(getActivity(),
+                    weatherForLocationUri,
+                    FORECAST_COLUMNS,
+                    null,
+                    null,
+                    sortOrder);
         }
         return cursorLoader;
     }
