@@ -6,7 +6,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,9 +24,10 @@ import ua.gvv.sunshine.data.WeatherContract;
 /**
  * Created by gvv on 29.10.16.
  */
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private ForecastAdapter adapter;
     private SharedPreferences sharedPref;
+    private final static int CURSOR_LOADER_ID = 100;
 
 
 
@@ -69,7 +74,7 @@ public class ForecastFragment extends Fragment {
                 .build();
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uriBuilder.toString()));
         if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            getContext().startActivity(intent);
+            getActivity().startActivity(intent);
         }
 
     }
@@ -94,15 +99,9 @@ public class ForecastFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        String locationSetting = Utility.getPreferredLocation(getActivity());
+        //Cursor cur = getActivity().getContentResolver().query(weatherForLocationUri, null, null, null, sortOrder);
 
-        // Sort order:  Ascending, by date.
-        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, System.currentTimeMillis());
-
-        Cursor cur = getActivity().getContentResolver().query(weatherForLocationUri, null, null, null, sortOrder);
-
-        adapter = new ForecastAdapter(getActivity(), cur, 0);
+        adapter = new ForecastAdapter(getActivity(), null, 0);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -120,4 +119,34 @@ public class ForecastFragment extends Fragment {
         return rootView;
     }
 
+
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        CursorLoader cursorLoader = null;
+        if (id == CURSOR_LOADER_ID) {
+            String locationSetting = Utility.getPreferredLocation(getActivity());
+
+            // Sort order:  Ascending, by date.
+            String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+            Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, System.currentTimeMillis());
+            cursorLoader = new CursorLoader(getActivity(), weatherForLocationUri, null, null, null, sortOrder);
+        }
+        return cursorLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        adapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+        adapter.swapCursor(null);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+    }
 }
