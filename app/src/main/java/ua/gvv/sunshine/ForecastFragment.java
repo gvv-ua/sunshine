@@ -78,13 +78,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateWeather();
-
-    }
-
     private void updateWeather() {
         if (sharedPref == null) {
             sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -106,14 +99,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         final ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(adapter);
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                String msg = adapter.getItem(position);
-//                Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra(Intent.EXTRA_TEXT, msg);
-//                startActivity(intent);
-//            }
-//        });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -168,5 +153,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+    }
+
+    void onLocationChanged( ) {
+        updateWeather();
+        getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
     }
 }

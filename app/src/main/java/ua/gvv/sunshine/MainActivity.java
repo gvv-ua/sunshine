@@ -9,16 +9,20 @@ import android.view.ViewGroup;
 
 public class MainActivity extends AppCompatActivity {
     private static final String ACTIVITY_LIFE_CYCLE_TAG = "ACTIVITY_LIFE_CYCLE";
+    private final String FORECASTFRAGMENT_TAG = "FFTAG";
+    private String location;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        location = Utility.getPreferredLocation(this);
         super.onCreate(savedInstanceState);
         Log.v(ACTIVITY_LIFE_CYCLE_TAG, "onCreate");
         setContentView(R.layout.activity_main);
         //setContentView(R.layout.fragment_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.activity_main, new ForecastFragment())
+                    .add(R.id.activity_main, new ForecastFragment(), FORECASTFRAGMENT_TAG)
                     .commit();
         }
     }
@@ -44,6 +48,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.v(ACTIVITY_LIFE_CYCLE_TAG, "onResume");
+        String prefLocation = Utility.getPreferredLocation(this);
+        if (!location.equals(prefLocation)) {
+            ForecastFragment ff = (ForecastFragment)getSupportFragmentManager().findFragmentByTag(FORECASTFRAGMENT_TAG);
+            if (ff != null) {
+                ff.onLocationChanged();
+            }
+            location = prefLocation;
+        }
     }
 
     @Override
@@ -57,4 +69,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         Log.v(ACTIVITY_LIFE_CYCLE_TAG, "onStart");
     }
+
+
+
 }
