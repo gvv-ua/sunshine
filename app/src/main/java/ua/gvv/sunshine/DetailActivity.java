@@ -78,9 +78,14 @@ public class DetailActivity extends ActionBarActivity {
             // Fetch and store ShareActionProvider
             shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
             if ((shareActionProvider != null) && (detailMsg != null)) {
-                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                    shareActionProvider.setShareIntent(shareIntent.setType("text/plain").putExtra(shareIntent.EXTRA_TEXT, detailMsg + "#SunshineApp"));
+                shareActionProvider.setShareIntent(createShareForecastIntent());
             }
+        }
+
+        private Intent createShareForecastIntent() {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain").putExtra(shareIntent.EXTRA_TEXT, detailMsg + "#SunshineApp");
+            return shareIntent;
         }
 
         @Override
@@ -130,6 +135,11 @@ public class DetailActivity extends ActionBarActivity {
                         Utility.formatTemperature(data.getDouble(Utility.COL_WEATHER_MIN_TEMP), isMetric);
                 TextView textViewview = (TextView) getActivity().findViewById(R.id.detail_text_view);
                 textViewview.setText(detailMsg);
+
+                // If onCreateOptionsMenu has already happened, we need to update the share intent now.
+                if (shareActionProvider != null) {
+                    shareActionProvider.setShareIntent(createShareForecastIntent());
+                }
             }
         }
 
